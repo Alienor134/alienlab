@@ -25,14 +25,14 @@ import alienlab.plot as figure
 X = np.linspace(0, 13, 1000)
 Y = [np.cos(X), np.cos(2*X)]
 
-p = figure.plotclass(X, Y)
+p = figure.PlotFigure(X, Y)
 p.label_list = ['w = 1', 'w = 2']
 p.title = 'Example'
 p.xlabel = 'x'
 p.ylabel = 'y'
 fig = p.plotting()
 ``` 
-![preview](figures/plot_cos)
+![preview](save_figures/plot_cos.png)
 
 Plot with 2 separate y-axis. Possibility to select axis scale (regular, loglog, semilogx, semilogy)
 ```
@@ -42,7 +42,7 @@ As = -1/(W**2 + 1)
 A = np.sqrt(Ac**2 + As**2)
 angle = np.arctan(As/Ac) * 180 / np.pi
 
-g = alien.plotclass()
+g = alien.PlotFigure()
 g.xval = W
 g.yval = A
 g.x2val = W
@@ -57,7 +57,10 @@ g.ylog = 'loglog'
 g.y2log = 'semilogx'
 f = g.coplotting()
 ```
-![preview](figures/plot_bode)
+![preview](save_figures/plot_bode.png)
 
 ## Images
+TODO
+
+## io
 TODO
