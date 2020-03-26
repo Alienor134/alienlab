@@ -8,35 +8,65 @@ Created on Thu Feb 14 22:29:53 2019
 """
 
 
-"""OPEN FILE"""
+
 
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import matplotlib.pyplot as plt
 import datetime
+from alienlab.io import create_folder_if
+import os
 
 
-"""PLOTS"""
 
-class plotclass(object):
+class Figure():
+    def __init__(self):
+        self.figsize = (9, 6)
+        self.fontsize = 13
+        self.title = 'My Title'
+        
+        #saving parameters
+        self.save_folder = ''
+        
+        self.date = True
+        self.save_name = 'Figure'
+        self.extension = '.tiff'
+    
+    def saving(self, f):
+        create_folder_if(self.save_folder)
+        
+        if self.date == True:
+            path = os.path.join(self.save_folder, str(datetime.datetime.now().strftime('%Y-%m-%d_%H_%M_')) + self.save_name + self.extension)            
+        else:
+            path = os.path.join(self.save_folder, self.save_name + self.extension)
+        
+        f.savefig(path, bbox_inches='tight')
+        return f
+    
+    def showing(self, f):
+        plt.ion()
+        f.show()    
+        plt.pause(0.01)
+        input("Press [enter] to continue.")
+        return f        
+
+
+
+
+class PlotFigure(Figure):
     """This class contains functions that can plot graphs and several curves on a graph (and save the plot)
     Input: x [array or list/tuple of arrays]: x axis values, either one array or multiple arrays
     Input: y [array or list/tuple of arrays]: x axis values, either one array or multiple arrays
     Output: plot f(x) = y, or overlayed curves f(xi) = yi"""
         
     def __init__(self, xval=None, yval=None):
+        super().__init__()
         #plot parameters
-        self.figsize = (9, 6)
-        self.fontsize = 13
+      
         self.color = 'steelblue'
         self.marker = 'o-'
         self.linewidth = 2
-        self.title = 'My Title'
-        
-        #saving parameters
-        self.date = True
-        self.save_name = 'Figure'
-        self.extension = '.tiff'
-        
+
+                
         #multiplot parameters
         self.label_item = ['MyLabel']
         self.label_list = self.label_item * 100
@@ -50,8 +80,8 @@ class plotclass(object):
         #axis formatting
         self.xlabel = 'x label (unit)'
         self.ylabel = 'y label (unit)'
-        self.sample = 10
-        self.subsample = 5
+        self.sample = 5
+        self.subsample = 2
         self.ylog = ''
         
         #coplotting
@@ -78,25 +108,8 @@ class plotclass(object):
             else: 
                 X = X * NY #extends the X list to match the size of the Y list
         return NX, NY, X, Y
-    
-    def plotting(self):
-        NX, NY, self.xval, self.yval = self.pretreat(self.xval, self.yval)    
-        f = plt.figure(figsize = self.figsize)
-   
-        for i in range(NY):
-            plt.title(self.title, fontsize = self.fontsize * 1.1)
-            plt.xlabel(self.xlabel, fontsize = self.fontsize)
-            plt.ylabel(self.ylabel, fontsize = self.fontsize)
-            plt.plot(self.xval[i], self.yval[i], self.marker, color = self.color_list[i],
-                    linewidth = self.linewidth, label = self.label_list[i]) #overlays new curve on the plot
-        if NY > 1:
-            plt.legend()
-        if self.date == True:            
-            plt.savefig(str(datetime.datetime.now().strftime('%Y-%m-%d_%H_%M_%S')) + self.save_name + self.extension)
-        else: 
-            plt.savefig(self.save_name + self.extension)
-        return f
-    
+ 
+
     def locator(self, x, axis_update):
         range_x = (x.max()-x.min())
         major_sample = range_x/self.sample
@@ -120,6 +133,33 @@ class plotclass(object):
                 plt.semilogx(x, y, color = color, linewidth = self.linewidth, label = label)
             else: 
                 plt.plot(x, y, color = color, linewidth = self.linewidth, label = label)
+                
+                
+    def plotting(self):
+        NX, NY, self.xval, self.yval = self.pretreat(self.xval, self.yval)    
+
+        fig, ax1 = plt.subplots(figsize = self.figsize)
+        
+        self.locator(self.xval[0], ax1.xaxis)
+        self.locator(self.yval[0], ax1.yaxis)
+        
+        ax1.set_xlabel(self.xlabel, fontsize = self.fontsize * 1.1)
+        ax1.set_ylabel(self.ylabel, color=self.color_list[0], fontsize = self.fontsize * 1.1)
+        
+        ax1.tick_params(labelsize = self.fontsize * 0.8, length = self.fontsize, which = 'major', width = self.linewidth//2)
+        ax1.tick_params(labelsize = self.fontsize * 0.8, length = self.fontsize//2, which ='minor', width = self.linewidth//2) 
+
+        for i in range(NY):
+            plt.title(self.title, fontsize = self.fontsize * 1.1)
+            plt.xlabel(self.xlabel, fontsize = self.fontsize)
+            plt.ylabel(self.ylabel, fontsize = self.fontsize)
+            self.logplot(self.xval[i], self.yval[i], color = self.color_list[i], label = self.label_list[i]) #overlays new curve on the plot
+        if NY > 1:
+            plt.legend()
+
+        return fig
+    
+
     
     def coplotting(self):
         NX1, NY1, self.xval, self.yval= self.pretreat(self.xval, self.yval)        
@@ -162,25 +202,20 @@ class plotclass(object):
             
         plt.legend(prop={'size': self.fontsize})
 
-        #fig.tight_layout()
-
-        plt.show()
         return fig
 
 
 
 
-class showclass(object):
+class ShowFigure(Figure):
     """This class contains functions that can show images and subplot several images (and save the plot)
     Input: x [array or list/tuple of arrays]: images to plot
     Output: plot of the image x or subplots of images xi"""
 
         
     def __init__(self):
+        super().__init__()
         #imshow parameters
-        self.figsize = (9, 6) #figure size
-        self.fontsize = 13  #font size
-        self.title = 'My Title' #figure title
         self.cmap = 'inferno'
 
         #multiple image imshow        
@@ -189,13 +224,11 @@ class showclass(object):
         self.col_num = 3
        
         #figure save parameters
-        self.date = True #write date and time before figure name
-        self.save_name = 'Figure' #setting the format!
-        self.save_folder = 'alienlab_images/'
-        self.extension = '.tiff'
         self.save_im = True
+        self.spacing = 0.2
 
-    def showing(self, x=None, y=None, showit = False):
+    def multi(self, x=None):
+    
         if type(x) != tuple and type(x) != list: #When there is only one image, convert it in a list element
             x = [x]
             
@@ -211,25 +244,13 @@ class showclass(object):
             
         f = plt.figure(figsize = self.figsize)
         
-        if showit == True:
-            plt.ion()
-            plt.show()
-        
         for i in range(N):
             plt.subplot(ROWS, COLS, i+1)
             plt.imshow(x[i], cmap = self.cmap)
             plt.axis('off')
             plt.grid(False)
-            plt.title(self.title_list[i], fontsize = self.fontsize) #update subfigure title
+            plt.subplots_adjust(wspace=self.spacing, hspace=self.spacing)
+            if self.title_list != None:
+                plt.title(self.title_list[i], fontsize = self.fontsize) #update subfigure title
         
-        if showit == True:
-            plt.pause(0.01)
-            input("Press [enter] to continue.")
-        if self.save_im == True:
-            if self.date == True:            
-                plt.savefig(self.save_folder + str(datetime.datetime.now().strftime('%Y-%m-%d_%H_%M_')) + self.save_name + self.extension,
-                            bbox_inches='tight', frameon = False) #save with the date and time befor the figure name
-            else: 
-                plt.savefig(self.save_folder + self.save_name + self.extension, bbox_inches='tight', frameon = False)
-
         return f
