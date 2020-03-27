@@ -4,7 +4,7 @@ This package was tested on Windows 10, Fedora and ArchLinux.
 
 You will want to modify the code and adapt it to your taste. I advise you to download the code in an easily accessible folder and install it in your python environment in developer mode. Any further modification to the code in your folder will be effective immediately when you import the package in a python console.
 ```
-$ git clone 
+$ git clone git@github.com:Alienor134/alienlab.git
 $ cd alienlab
 $ python setup.py develop
 ```
