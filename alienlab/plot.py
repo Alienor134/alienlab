@@ -17,6 +17,7 @@ from alienlab.io import create_folder_if
 import os
 
 
+#Parent class
 
 class Figure():
     def __init__(self):
@@ -51,7 +52,8 @@ class Figure():
 
 
 
-
+#child class to ploth graphs
+        
 class PlotFigure(Figure):
     """This class contains functions that can plot graphs and several curves on a graph (and save the plot)
     Input: x [array or list/tuple of arrays]: x axis values, either one array or multiple arrays
@@ -153,7 +155,7 @@ class PlotFigure(Figure):
             plt.title(self.title, fontsize = self.fontsize * 1.1)
             plt.xlabel(self.xlabel, fontsize = self.fontsize)
             plt.ylabel(self.ylabel, fontsize = self.fontsize)
-            self.logplot(self.xval[i], self.yval[i], color = self.color_list[i], label = self.label_list[i]) #overlays new curve on the plot
+            self.logplot(self.xval[i], self.yval[i], color = self.color_list[i], label = self.label_list[i], log = self.ylog) #overlays new curve on the plot
         if NY > 1:
             plt.legend()
 
@@ -206,7 +208,7 @@ class PlotFigure(Figure):
 
 
 
-
+#Child class to plot images
 class ShowFigure(Figure):
     """This class contains functions that can show images and subplot several images (and save the plot)
     Input: x [array or list/tuple of arrays]: images to plot

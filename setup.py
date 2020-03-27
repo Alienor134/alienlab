@@ -3,7 +3,10 @@ import sys
 
 from setuptools import setup, Extension, find_packages
 
-install_requires=[]
+install_requires=[
+	matplotlib,
+	datetime,
+	PyQt5]
 
 
 s = setup(
