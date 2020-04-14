@@ -15,6 +15,25 @@ import matplotlib.pyplot as plt
 import datetime
 from alienlab.io import create_folder_if
 import os
+import numpy as np
+import random
+
+def random_color(num, dim = 3, transparency = 128, div = 255):
+    if num < 1:
+        num = (num * 255)//1
+    num = int(num)
+    R = random.randint(0, num)
+    G = random.randint(0, num - R)
+    B = random.randint(0, num - R - G)
+    color = [R/div, G/div, B/div]
+    random.shuffle(color)
+    if dim == 1:
+        return color[0]
+    if dim == 4:
+        return color + [transparency]
+    else: 
+        return color
+
 
 
 #Parent class
@@ -26,7 +45,7 @@ class Figure():
         self.title = 'My Title'
         
         #saving parameters
-        self.save_folder = ''
+        self.save_folder = 'save_figures'
         
         self.date = True
         self.save_name = 'Figure'
@@ -60,24 +79,25 @@ class PlotFigure(Figure):
     Input: y [array or list/tuple of arrays]: x axis values, either one array or multiple arrays
     Output: plot f(x) = y, or overlayed curves f(xi) = yi"""
         
-    def __init__(self, xval=None, yval=None):
+    def __init__(self):
         super().__init__()
         #plot parameters
       
         self.color = 'steelblue'
         self.marker = 'o-'
         self.linewidth = 2
-
+        self.legend = True
                 
         #multiplot parameters
         self.label_item = ['MyLabel']
         self.label_list = self.label_item * 100
-        self.color_list = [self.color] + ['indianred', 'seagreen', 'mediumslateblue', 'maroon', 'palevioletred'
-                          'orange', 'lightseagreen', 'dimgrey', 'slateblue']
+        self.color_list = [random_color(255) for i in range(100)]
+        #[self.color] + ['indianred', 'seagreen', 'mediumslateblue', 'maroon', 'palevioletred'
+                          #'orange', 'lightseagreen', 'dimgrey', 'slateblue']
 
 
-        self.xval = xval
-        self.yval = yval
+        self.xval = []
+        self.yval = []
         
         #axis formatting
         self.xlabel = 'x label (unit)'
@@ -137,7 +157,9 @@ class PlotFigure(Figure):
                 plt.plot(x, y, color = color, linewidth = self.linewidth, label = label)
                 
                 
-    def plotting(self):
+    def plotting(self, xval, yval):
+        self.xval = xval
+        self.yval = yval
         NX, NY, self.xval, self.yval = self.pretreat(self.xval, self.yval)    
 
         fig, ax1 = plt.subplots(figsize = self.figsize)
@@ -157,7 +179,8 @@ class PlotFigure(Figure):
             plt.ylabel(self.ylabel, fontsize = self.fontsize)
             self.logplot(self.xval[i], self.yval[i], color = self.color_list[i], label = self.label_list[i], log = self.ylog) #overlays new curve on the plot
         if NY > 1:
-            plt.legend()
+                if self.legend == True:
+                        plt.legend()
 
         return fig
     
