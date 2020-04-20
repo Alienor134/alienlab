@@ -17,16 +17,25 @@ Example of use:
 Simple plot, takes as input X and Y, arrays or lists of arrays when plotting multiple curves.
 ```
 import numpy as np
-import alienlab.plot as figure
+import alienlab.plot
 X = np.linspace(0, 13, 1000)
 Y = [np.cos(X), np.cos(2*X)]
 
-p = figure.PlotFigure(X, Y)
+p = alienlab.PlotFigure()
 p.label_list = ['w = 1', 'w = 2']
 p.title = 'Example'
 p.xlabel = 'x'
 p.ylabel = 'y'
-fig = p.plotting()
+
+fig = p.plotting(X, Y)
+p.showing(fig) #if you want to plot the image
+
+# To go further: 
+p.save_folder = 'save_figures' #Where to save the images plotted
+p.date = False #includes the date in the save name (default = True)
+p.save_name = 'plot_cos'
+p.extension = '.png'
+p.saving(fig) #if you ant to save the image
 ``` 
 ![preview](save_figures/plot_cos.png)
 
