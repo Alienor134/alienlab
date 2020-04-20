@@ -132,8 +132,8 @@ class PlotFigure(Figure):
         return NX, NY, X, Y
  
 
-    def locator(self, x, axis_update):
-        range_x = (x.max()-x.min())
+    def locator(self, mini, maxi, axis_update):
+        range_x = maxi - mini
         major_sample = range_x/self.sample
         minor_sample = major_sample / self.subsample
         
@@ -164,8 +164,8 @@ class PlotFigure(Figure):
 
         fig, ax1 = plt.subplots(figsize = self.figsize)
         
-        self.locator(self.xval[0], ax1.xaxis)
-        self.locator(self.yval[0], ax1.yaxis)
+        self.locator(np.array(self.xval).min(), np.array(self.xval).max(), ax1.xaxis)
+        self.locator(np.array(self.yval).min(), np.array(self.yval).max(), ax1.yaxis)
         
         ax1.set_xlabel(self.xlabel, fontsize = self.fontsize * 1.1)
         ax1.set_ylabel(self.ylabel, color=self.color_list[0], fontsize = self.fontsize * 1.1)
@@ -180,7 +180,7 @@ class PlotFigure(Figure):
             self.logplot(self.xval[i], self.yval[i], color = self.color_list[i], label = self.label_list[i], log = self.ylog) #overlays new curve on the plot
         if NY > 1:
                 if self.legend == True:
-                        plt.legend()
+                        plt.legend(loc = 'best')
 
         return fig
     
@@ -191,8 +191,8 @@ class PlotFigure(Figure):
         NX2, NY2, self.x2val, self.y2val = self.pretreat(self.x2val, self.y2val)        
 
         fig, ax1 = plt.subplots(figsize = self.figsize)
-        self.locator(self.xval[0], ax1.xaxis)
-        self.locator(self.yval[0], ax1.yaxis)
+        self.locator(np.array(self.xval).min(), np.array(self.xval).max(), ax1.xaxis)
+        self.locator(np.array(self.yval).min(), np.array(self.yval).max(), ax1.yaxis)
         
         ax1.set_xlabel(self.xlabel, fontsize = self.fontsize * 1.1)
         ax1.set_ylabel(self.ylabel, color=self.color_list[0], fontsize = self.fontsize * 1.1)
@@ -207,12 +207,12 @@ class PlotFigure(Figure):
             label = self.label_list[i]
             self.logplot(x, y, color, label, self.ylog)
 
-        plt.legend(prop={'size': self.fontsize})
+        #plt.legend(loc = 'best', prop={'size': self.fontsize})
 
 
 
         ax2 = ax1.twinx()  # second axis on the right
-        self.locator(self.y2val[0], ax2.yaxis) 
+        self.locator(np.array(self.y2val).min(), np.array(self.y2val).max(), ax2.yaxis) 
 
         ax2.tick_params(labelsize = self.fontsize * 0.8, length = self.fontsize, which = 'major', width = self.linewidth//2)
         ax2.tick_params(labelsize = self.fontsize * 0.8, length = self.fontsize//2, which ='minor', width = self.linewidth//2) 
@@ -225,7 +225,7 @@ class PlotFigure(Figure):
             label = self.label2_list[i]
             self.logplot(x, y, color, label, self.y2log)
             
-        plt.legend(prop={'size': self.fontsize})
+        #plt.legend(loc = 'best', prop={'size': self.fontsize})
 
         return fig
 

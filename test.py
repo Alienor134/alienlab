@@ -10,13 +10,13 @@ import alienlab.plot as figure
 X = np.linspace(0, 13, 1000)
 Y = [np.cos(X), np.cos(2*X)]
 
-p = figure.PlotFigure(X, Y)
+p = figure.PlotFigure()
 p.label_list = ['w = 1', 'w = 2']
 p.title = 'Example'
 p.xlabel = 'x'
 p.ylabel = 'y'
 
-fig = p.plotting()
+fig = p.plotting(X, Y)
 p.save_folder = 'save_figures'
 p.date = False
 p.save_name = 'plot_cos'

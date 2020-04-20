@@ -4,7 +4,7 @@ import sys
 from PyQt5 import QtWidgets, QtGui, QtCore
 
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRubberBand
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QRubberBand, QDialog
 from PyQt5.QtGui import QIcon, QPixmap, QColor, QPainter, QPolygon, QImage
 
 import numpy as np
@@ -19,9 +19,9 @@ def catch_file(direc = cwd ):
     """Opens a dialog window to select a file. Default directory: current directory
     direc [str]: directory to open (default: current directory)
     """
-    
     app = QtWidgets.QApplication(sys.argv)
-    fname = QtWidgets.QFileDialog.getOpenFileName(None, directory=direc, caption = "Select a video file...",
+    widget = QtWidgets.QFileDialog
+    fname = widget.getOpenFileName(None, directory=direc, caption = "Select a video file...",
                                                   filter="All files (*)")
     return fname[0]
 
@@ -37,7 +37,9 @@ class Window(QLabel):
         self.rubberBand = QRubberBand(QRubberBand.Rectangle, self)
         self.origin = QPoint()
         self.end = QPoint()
-    
+        self.title = 'Select the region of interest and close the window'
+        self.setWindowTitle(self.title)
+        
     def mousePressEvent(self, event):
     
         if event.button() == Qt.LeftButton:
