@@ -4,14 +4,15 @@ import sys
 from setuptools import setup, Extension, find_packages
 
 install_requires=[
-	'matplotlib'=3.2.1,
+	'matplotlib>=3.2.1',
 	'DateTime',
-	'opencv-python'=4.2.0.34,
-	'labelme'= 4.2.10,
-	'imageio'= 2.8.0,
-	'scikit-image'= 0.16.2,
-	'joblib' = 0.14.1,
-	'pillow' = 7.1.1]
+	'opencv-python>=4.2.0.34',
+	'labelme>= 4.2.10',
+	'imageio>= 2.8.0',
+	'scikit-image>= 0.16.2',
+	'joblib>= 0.14.1',
+	'pillow>= 7.1.1',
+	'imgviz>= 0.11.0']
 
 #and PyQt5
 

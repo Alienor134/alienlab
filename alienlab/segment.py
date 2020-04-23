@@ -43,7 +43,7 @@ def local_maxima(im, min_distance, h, ref_distance = False, mask = None, show = 
         peaks = np.swapaxes(peaks, 0, 1)
         peaks_im = np.swapaxes(peaks, 1, 2)
         peaks = np.array([im, im, im])
-        maxi = np.asarray([skimage.morphology.binary_dilation(local_maxi), local_maxi*0, local_maxi*0])
+        maxi = np.asarray([skimage.morphology.binary_dilation(dist_local_maxi), local_maxi*0, local_maxi*0])
         peaks = normalize(peaks + maxi, 0, 1)
         peaks = np.swapaxes(peaks, 0, 1)
         peaks_dist = np.swapaxes(peaks, 1, 2)
@@ -139,7 +139,7 @@ def segmented_to_json(segmentation, save_path, im_rgb):
                   }
 
     for i, key in enumerate(contours.keys()):
-        line_color = alienlab.plot.random_color(255 - i, dim = 4, transparency = 50, div = 1)
+        line_color = alienlab.plot.random_color((255 - i)%255, dim = 4, transparency = 50, div = 1)
         fill_color = line_color.copy()
 
         shape_dict = {'label' : key, 
@@ -153,14 +153,13 @@ def segmented_to_json(segmentation, save_path, im_rgb):
     with open(alienlab.io.replace_extension(save_path, '.json'), 'w') as json_file:
         json.dump(labels_json, json_file)
         
-def json_to_segmented(json_path):
+def json_to_segmented(json_path, im_basis):
     '''Converts the polygon segmentation contours from a json file to a mask image with several labels '''
 
     with open(json_path, 'r') as json_file:
         labels_json = json.load(json_file)
     shape_dict = labels_json['shapes']
-    im_segmented = np.zeros((labels_json['imageHeight'], labels_json['imageWidth']))
     for shape in shape_dict:
         poly = [np.array(shape['points']).astype(np.int)]
-        cv2.fillPoly(im_segmented, poly, int(shape['label']))
-    return im_segmented
+        cv2.fillPoly(im_basis, poly, int(shape['label']))
+    return im_basis

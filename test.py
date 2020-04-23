@@ -6,11 +6,11 @@ Created on Thu Mar 26 16:31:31 2020
 """
 
 import numpy as np
-import alienlab.plot as figure
+import alienlab.plot
 X = np.linspace(0, 13, 1000)
 Y = [np.cos(X), np.cos(2*X)]
 
-p = figure.PlotFigure()
+p = alienlab.PlotFigure()
 p.label_list = ['w = 1', 'w = 2']
 p.title = 'Example'
 p.xlabel = 'x'
