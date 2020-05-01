@@ -12,7 +12,8 @@ install_requires=[
 	'scikit-image>= 0.16.2',
 	'joblib>= 0.14.1',
 	'pillow>= 7.1.1',
-	'imgviz>= 0.11.0']
+	'imgviz>= 0.11.0', 
+	'pandas']
 
 #and PyQt5
 

@@ -92,6 +92,8 @@ class PlotFigure(Figure):
         self.label_item = ['MyLabel']
         self.label_list = self.label_item * 100
         self.color_list = [random_color(255) for i in range(100)]
+        self.color2_list = [random_color(255) for i in range(100)]
+
         #[self.color] + ['indianred', 'seagreen', 'mediumslateblue', 'maroon', 'palevioletred'
                           #'orange', 'lightseagreen', 'dimgrey', 'slateblue']
 
@@ -221,7 +223,7 @@ class PlotFigure(Figure):
         
         for i, y in enumerate(self.y2val):
             x = self.x2val[i]
-            color = self.color_list[i+1]
+            color = self.color2_list[i]
             label = self.label2_list[i]
             self.logplot(x, y, color, label, self.y2log)
             
