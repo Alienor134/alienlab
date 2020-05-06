@@ -13,26 +13,11 @@ Created on Thu Feb 14 22:29:53 2019
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import matplotlib.pyplot as plt
 import datetime
-from alienlab.io import create_folder_if
+from alienlab.utils import create_folder_if, random_color
 import os
 import numpy as np
 import random
 
-def random_color(num, dim = 3, transparency = 128, div = 255):
-    if num < 1:
-        num = (num * 255)//1
-    num = int(num)
-    R = random.randint(0, num)
-    G = random.randint(0, num - R)
-    B = random.randint(0, num - R - G)
-    color = [R/div, G/div, B/div]
-    random.shuffle(color)
-    if dim == 1:
-        return color[0]
-    if dim == 4:
-        return color + [transparency]
-    else: 
-        return color
 
 
 
@@ -50,6 +35,7 @@ class Figure():
         self.date = True
         self.save_name = 'Figure'
         self.extension = '.tiff'
+
     
     def saving(self, f):
         create_folder_if(self.save_folder)
@@ -86,8 +72,9 @@ class PlotFigure(Figure):
         self.color = 'steelblue'
         self.marker = 'o-'
         self.linewidth = 2
-        self.legend = True
-        self.ticks = True        
+        self.legend = True #show legend for curves
+        self.ticks = True   #not show ticks on the axis
+        self.axes = False #not output the axes when plotting     
         
         #multiplot parameters
         self.label_item = ['MyLabel']
@@ -190,8 +177,10 @@ class PlotFigure(Figure):
                 if self.legend == True:
                         plt.legend(loc = 'best')
 
-        return fig, ax1
-    
+        if self.axes:
+           return fig, ax1
+        else: 
+           return fig
 
     
     def coplotting(self):
@@ -244,8 +233,11 @@ class PlotFigure(Figure):
             
         #plt.legend(loc = 'best', prop={'size': self.fontsize})
 
-        return fig, ax1, ax2
+        if self.axes:
+           return fig, ax1, ax2
 
+        else: 
+           return fig
 
 
 #Child class to plot images

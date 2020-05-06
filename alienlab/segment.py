@@ -1,6 +1,7 @@
 
 from alienlab.improcessing import *
 import alienlab.plot
+import alienlab.utils
 
 import cv2
 import json
@@ -150,7 +151,7 @@ def segmented_to_json(segmentation, save_path, im_rgb):
                       'flags': {}}
         labels_json['shapes'].append(shape_dict)
 
-    with open(alienlab.io.replace_extension(save_path, '.json'), 'w') as json_file:
+    with open(alienlab.utils.replace_extension(save_path, '.json'), 'w') as json_file:
         json.dump(labels_json, json_file)
         
 def json_to_segmented(json_path, im_basis):

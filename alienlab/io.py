@@ -11,10 +11,6 @@ import numpy as np
 
 cwd = os.getcwd()
 
-def create_folder_if(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
 def catch_file(direc = cwd ):
     """Opens a dialog window to select a file. Default directory: current directory
     direc [str]: directory to open (default: current directory)
@@ -25,9 +21,7 @@ def catch_file(direc = cwd ):
                                                   filter="All files (*)")
     return fname[0]
 
-def replace_extension(file_path, new_ext):
-    new_path = os.path.splitext(file_path)[0] + new_ext
-    return new_path
+
 
 class Window(QLabel):
 
