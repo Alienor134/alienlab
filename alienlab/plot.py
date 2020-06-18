@@ -17,6 +17,7 @@ from alienlab.utils import create_folder_if, random_color
 import os
 import numpy as np
 import random
+import pandas as pd
 
 
 
@@ -41,16 +42,23 @@ class Figure():
         create_folder_if(self.save_folder)
         
         if self.date == True:
-            path = os.path.join(self.save_folder, str(datetime.datetime.now().strftime('%Y-%m-%d_%H_%M_')) + self.save_name + self.extension)            
+            path = os.path.join(self.save_folder, str(datetime.datetime.now().strftime('%Y-%m-%d_%H_%M_')) + self.save_name)
         else:
-            path = os.path.join(self.save_folder, self.save_name + self.extension)
-        
-        f.savefig(path, bbox_inches='tight')
+            path = os.path.join(self.save_folder, self.save_name)
+        try: 
+            f[0].savefig(path + self.extension, bbox_inches='tight')
+            f[1].to_csv(path + ".csv")
+        except: 
+            f.savefig(path + self.extension, bbox_inches='tight')
+
         return f
     
     def showing(self, f):
         plt.ion()
-        f.show()    
+        try:
+            f[0].show()
+        except:
+            f.show()    
         plt.pause(0.01)
         input("Press [enter] to continue.")
         return f        
@@ -79,8 +87,8 @@ class PlotFigure(Figure):
         #multiplot parameters
         self.label_item = ['MyLabel']
         self.label_list = self.label_item * 100
-        self.color_list = [random_color(255) for i in range(100)]
-        self.color2_list = [random_color(255) for i in range(100)]
+        self.color_list = [(1,0,0),(0,0,0),(0,0,1)] + [random_color(255) for i in range(100)]
+        self.color2_list = [(0.5,0,0),(0.5,0.5,0.5),(0,0,0.5)] + [random_color(255) for i in range(100)]
 
 
         #[self.color] + ['indianred', 'seagreen', 'mediumslateblue', 'maroon', 'palevioletred'
@@ -137,20 +145,21 @@ class PlotFigure(Figure):
         # for the minor ticks, use no labels; default NullFormatter
         axis_update.set_minor_locator(minorLocator)
 
-    def logplot(self, x, y, color, label, log = ''):
+    def logplot(self, x, y, color, label,  log = '', linestyle = '-'):
             if log == 'loglog':
-                plt.loglog(x, y, color = color, linewidth = self.linewidth, label = label)
+                plt.loglog(x, y, color = color, linewidth = self.linewidth, label = label, linestyle=linestyle)
             elif log == 'semilogy':
-                plt.semilogy(x, y, color = color, linewidth = self.linewidth, label = label)
+                plt.semilogy(x, y, color = color, linewidth = self.linewidth, label = label, linestyle=linestyle)
             elif log == 'semilogx':
-                plt.semilogx(x, y, color = color, linewidth = self.linewidth, label = label)
+                plt.semilogx(x, y, color = color, linewidth = self.linewidth, label = label, linestyle=linestyle)
             else: 
-                plt.plot(x, y, color = color, linewidth = self.linewidth, label = label)
+                plt.plot(x, y, color = color, linewidth = self.linewidth, label = label, linestyle=linestyle)
                 
                 
     def plotting(self, xval, yval):
         self.xval = xval
         self.yval = yval
+        dict_for_pd = {}
         NX, NY, self.xval, self.yval = self.pretreat(self.xval, self.yval)    
 
         fig, ax1 = plt.subplots(figsize = self.figsize)
@@ -173,19 +182,27 @@ class PlotFigure(Figure):
             plt.xlabel(self.xlabel, fontsize = self.fontsize)
             plt.ylabel(self.ylabel, fontsize = self.fontsize)
             self.logplot(self.xval[i], self.yval[i], color = self.color_list[i], label = self.label_list[i], log = self.ylog) #overlays new curve on the plot
+            dict_for_pd[self.xlabel + ' ' + self.label_list[i]] = self.xval[i]
+            dict_for_pd[self.ylabel + ' ' + self.label_list[i]] = self.yval[i]
+
         if NY > 1:
                 if self.legend == True:
                         plt.legend(loc = 'best')
 
+
+        df = pd.DataFrame.from_dict(dict_for_pd)
+
         if self.axes:
            return fig, ax1
-        else: 
-           return fig
+        else:
+            return fig, df
+
 
     
     def coplotting(self):
         NX1, NY1, self.xval, self.yval= self.pretreat(self.xval, self.yval)        
         NX2, NY2, self.x2val, self.y2val = self.pretreat(self.x2val, self.y2val)        
+        dict_for_pd = {}
 
         fig, ax1 = plt.subplots(figsize = self.figsize)
        
@@ -206,8 +223,9 @@ class PlotFigure(Figure):
             x = self.xval[i]
             color = self.color_list[i]
             label = self.label_list[i]
-            self.logplot(x, y, color, label, self.ylog)
-
+            self.logplot(x, y, color, label, self.ylog, linestyle = '-')
+            dict_for_pd[self.xlabel + ' ' + label] = self.xval[i]
+            dict_for_pd[self.ylabel + ' ' + label] = self.yval[i]
         #plt.legend(loc = 'best', prop={'size': self.fontsize})
 
 
@@ -229,15 +247,19 @@ class PlotFigure(Figure):
             x = self.x2val[i]
             color = self.color2_list[i]
             label = self.label2_list[i]
-            self.logplot(x, y, color, label, self.y2log)
-            
+            self.logplot(x, y, color, label, log = self.y2log, linestyle = ":")
+            dict_for_pd[self.xlabel + ' ' + label] = self.xval[i]
+            dict_for_pd[self.y2label + ' ' + label] = self.yval[i]            
         #plt.legend(loc = 'best', prop={'size': self.fontsize})
+
+        df = pd.DataFrame.from_dict(dict_for_pd)
+
 
         if self.axes:
            return fig, ax1, ax2
 
         else: 
-           return fig
+           return fig, df
 
 
 #Child class to plot images
