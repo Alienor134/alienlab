@@ -160,10 +160,11 @@ def json_to_segmented(json_path, im_basis):
     with open(json_path, 'r') as json_file:
         labels_json = json.load(json_file)
     shape_dict = labels_json['shapes']
+    im_origin = np.copy(im_basis) * 0
     for shape in shape_dict:
-        print(shape)
         poly = [np.array(shape['points']).astype(np.int)]
         cv2.fillPoly(im_basis, poly, int(shape['label']))
+        cv2.fillPoly(im_origin, poly, int(shape['label']))
         cv2.putText(im_basis, "{}".format(shape['label']), (int(shape['points'][0][0]) - 10, int(shape['points'][0][1])),
 		cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1)
-    return im_basis
+    return im_basis, im_origin
