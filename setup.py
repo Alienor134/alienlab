@@ -13,7 +13,11 @@ install_requires=[
 	'joblib>= 0.14.1',
 	'pillow>= 7.1.1',
 	'imgviz>= 0.11.0', 
-	'pandas']
+	'pandas', 
+    'colorlog',
+    'logging', 
+    'statsmodels', 
+    'scipy']
 
 #and PyQt5
 
