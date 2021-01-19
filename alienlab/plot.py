@@ -18,7 +18,9 @@ import os
 import numpy as np
 import random
 import pandas as pd
-
+import matplotlib
+matplotlib.rcParams['font.sans-serif'] = "Arial"
+matplotlib.rcParams['font.family'] = "sans-serif"
 
 
 
@@ -28,6 +30,7 @@ class Figure():
     def __init__(self):
         self.figsize = (9, 6)
         self.fontsize = 13
+        self.fonttick = 12
         self.title = 'My Title'
         
         #saving parameters
@@ -46,10 +49,10 @@ class Figure():
         else:
             path = os.path.join(self.save_folder, self.save_name)
         try: 
-            f[0].savefig(path + self.extension, bbox_inches='tight')
+            f[0].savefig(path + self.extension)
             f[1].to_csv(path + ".csv")
         except: 
-            f.savefig(path + self.extension, bbox_inches='tight')
+            f.savefig(path + self.extension)
 
         return f
     
@@ -82,8 +85,9 @@ class PlotFigure(Figure):
         self.linewidth = 2
         self.legend = True #show legend for curves
         self.ticks = True   #not show ticks on the axis
-        self.axes = False #not output the axes when plotting     
-        
+        self.axes = False #not output the axes when plotting
+        self.major_ticks = True     
+        self.minor_ticks = False
         #multiplot parameters
         self.label_item = ['MyLabel']
         self.label_list = self.label_item * 100
@@ -137,13 +141,14 @@ class PlotFigure(Figure):
         minor_sample = major_sample / self.subsample
 
         majorLocator = MultipleLocator(major_sample)
-        majorFormatter = FormatStrFormatter('%.1e')
+        majorFormatter = FormatStrFormatter('%.2f')
         minorLocator = MultipleLocator(minor_sample)
 
         axis_update.set_major_locator(majorLocator)
         axis_update.set_major_formatter(majorFormatter)
         # for the minor ticks, use no labels; default NullFormatter
-        axis_update.set_minor_locator(minorLocator)
+        if self.minor_ticks:
+            axis_update.set_minor_locator(minorLocator)
 
     def logplot(self, x, y, color, label,  log = '', linestyle = '-'):
             if log == 'loglog':
@@ -164,18 +169,28 @@ class PlotFigure(Figure):
 
         fig, ax1 = plt.subplots(figsize = self.figsize)
         
-        if self.ticks == True:
-            self.locator(np.array(self.xval).min(), np.array(self.xval).max(), ax1.xaxis)
-            self.locator(np.array(self.yval).min(), np.array(self.yval).max(), ax1.yaxis)
+        if self.ticks == True and len(self.xval) > 0 and len(self.yval) > 0:
+            
+            xx = np.concatenate(self.xval)
+            yy = np.concatenate(self.yval)
+
+            self.locator(xx.min(), xx.max(), ax1.xaxis)
+            self.locator(yy.min(), yy.max(), ax1.yaxis)
         else: 
             ax1.tick_params(axis='both', top=False, bottom=False, left=False, right=False, labelleft=False, labelright = False, labelbottom=False)
 
         
-        ax1.set_xlabel(self.xlabel, fontsize = self.fontsize * 1.1)
-        ax1.set_ylabel(self.ylabel, color=self.color_list[0], fontsize = self.fontsize * 1.1)
+        ax1.set_xlabel(self.xlabel, fontsize = self.fontsize)
+        ax1.set_ylabel(self.ylabel, fontsize = self.fontsize)
         
-        ax1.tick_params(labelsize = self.fontsize * 0.8, length = self.fontsize, which = 'major', width = self.linewidth//2)
-        ax1.tick_params(labelsize = self.fontsize * 0.8, length = self.fontsize//2, which ='minor', width = self.linewidth//2) 
+        if self.major_ticks == True:
+            ax1.tick_params(axis = 'x', labelsize = self.fonttick, length = self.fonttick, which = 'major', width = self.linewidth//2,
+                            direction = 'in')
+            ax1.tick_params(axis = 'y', labelsize = self.fonttick*0, length = self.fonttick, which = 'major', width = self.linewidth//2,
+                            direction = 'in', top = True, right = True)
+        if self.minor_ticks == True:
+            ax1.tick_params(labelsize = self.fonttick, length = self.fonttick//2, which ='minor', width = self.linewidth//2,
+                            direction = 'in') 
 
         for i in range(NY):
             plt.title(self.title, fontsize = self.fontsize * 1.1)
@@ -189,13 +204,24 @@ class PlotFigure(Figure):
                 if self.legend == True:
                         plt.legend(loc = 'best')
 
+        def pad_dict_list(dict_list, padel):
+            lmax = 0
+            for lname in dict_list.keys():
+                lmax = max(lmax, len(dict_list[lname]))
+            for lname in dict_list.keys():
+                ll = len(dict_list[lname])
+                if  ll < lmax:
+                    dict_list[lname] =  np.concatenate([np.array(dict_list[lname]), np.array([padel] * (lmax - ll))])
+            return dict_list
+
+        dict_for_pd = pad_dict_list(dict_for_pd, 0)
 
         df = pd.DataFrame.from_dict(dict_for_pd)
 
         if self.axes:
            return fig, ax1
         else:
-            return fig, df
+            return fig, df, ax1
 
 
     
@@ -252,6 +278,17 @@ class PlotFigure(Figure):
             dict_for_pd[self.y2label + ' ' + label] = self.yval[i]            
         #plt.legend(loc = 'best', prop={'size': self.fontsize})
 
+        def pad_dict_list(dict_list, padel):
+            lmax = 0
+            for lname in dict_list.keys():
+                lmax = max(lmax, len(dict_list[lname]))
+            for lname in dict_list.keys():
+                ll = len(dict_list[lname])
+                if  ll < lmax:
+                    dict_list[lname] =  np.concatenate([np.array(dict_list[lname]), np.array([padel] * (lmax - ll))])
+            return dict_list
+
+        dict_for_pd = pad_dict_list(dict_for_pd, 0)
         df = pd.DataFrame.from_dict(dict_for_pd)
 
 

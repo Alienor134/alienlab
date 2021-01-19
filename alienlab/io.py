@@ -69,7 +69,7 @@ def select_roi(im):
     app = QApplication(sys.argv)
 
     window = Window()
-    window.setGeometry(0,0, 100, 100)
+    window.setGeometry(0,0, 50, 50)
     pixmap = QPixmap.fromImage(get_qimage(im))
     window.setPixmap(pixmap)
     window.resize(pixmap.width(), pixmap.height())
