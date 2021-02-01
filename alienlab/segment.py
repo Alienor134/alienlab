@@ -76,7 +76,7 @@ def watershed(im, mask, local_maxi, h, ref_distance = False, show = False):
     watershed_im_nomask = skimage.segmentation.watershed(-im, markers)
     watershed_im_mask = skimage.segmentation.watershed(-im, markers, mask=mask)
     
-    if show == False:
+    if show == True:
         h.col_num = 3
         h.title_list = ['Overlapping objects',  'watershed_im','Separated objects',
                         'Distances','watershed_dist', 'Separated_objects' ]
