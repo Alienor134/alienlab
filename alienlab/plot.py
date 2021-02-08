@@ -86,12 +86,8 @@ class PlotFigure(Figure):
         self.legend = True #show legend for curves
         self.ticks = True   #not show ticks on the axis
         self.axes = False #not output the axes when plotting
-<<<<<<< Updated upstream
         self.majorFormatterx = "%d"#"%0.2f"
         self.majorFormattery = "%0.2e"#"%0.2f"
-
-=======
->>>>>>> Stashed changes
         self.major_ticks = True     
         self.minor_ticks = False
         #multiplot parameters
@@ -146,10 +142,8 @@ class PlotFigure(Figure):
         major_sample = range_array/self.sample
         minor_sample = major_sample / self.subsample
         majorLocator = MultipleLocator(major_sample)
-<<<<<<< Updated upstream
-=======
+
         majorFormatter = FormatStrFormatter('%.2f')
->>>>>>> Stashed changes
         minorLocator = MultipleLocator(minor_sample)
 
         if axis_update.__name__ == 'xaxis':
