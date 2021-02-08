@@ -86,6 +86,9 @@ class PlotFigure(Figure):
         self.legend = True #show legend for curves
         self.ticks = True   #not show ticks on the axis
         self.axes = False #not output the axes when plotting
+        self.majorFormatterx = "%d"#"%0.2f"
+        self.majorFormattery = "%0.2e"#"%0.2f"
+
         self.major_ticks = True     
         self.minor_ticks = False
         #multiplot parameters
@@ -136,13 +139,16 @@ class PlotFigure(Figure):
  
 
     def locator(self, mini, maxi, axis_update):
-        range_x = maxi - mini
-        major_sample = range_x/self.sample
+        range_array = maxi - mini
+        major_sample = range_array/self.sample
         minor_sample = major_sample / self.subsample
-
         majorLocator = MultipleLocator(major_sample)
-        majorFormatter = FormatStrFormatter('%.2f')
         minorLocator = MultipleLocator(minor_sample)
+
+        if axis_update.__name__ == 'xaxis':
+            majorFormatter = FormatStrFormatter(self.majorFormatterx)
+        elif axis_update.__name__ == "yaxis":
+            majorFormatter = FormatStrFormatter(self.majorFormattery)
 
         axis_update.set_major_locator(majorLocator)
         axis_update.set_major_formatter(majorFormatter)
@@ -186,7 +192,7 @@ class PlotFigure(Figure):
         if self.major_ticks == True:
             ax1.tick_params(axis = 'x', labelsize = self.fonttick, length = self.fonttick, which = 'major', width = self.linewidth//2,
                             direction = 'in')
-            ax1.tick_params(axis = 'y', labelsize = self.fonttick*0, length = self.fonttick, which = 'major', width = self.linewidth//2,
+            ax1.tick_params(axis = 'y', labelsize = self.fonttick, length = self.fonttick, which = 'major', width = self.linewidth//2,
                             direction = 'in', top = True, right = True)
         if self.minor_ticks == True:
             ax1.tick_params(labelsize = self.fonttick, length = self.fonttick//2, which ='minor', width = self.linewidth//2,
@@ -238,11 +244,11 @@ class PlotFigure(Figure):
         else: 
             ax1.tick_params(axis='both', top=False, bottom=False, left=False, right=False, labelleft=False, labelright = False,  labelbottom=False)
         
-        ax1.set_xlabel(self.xlabel, fontsize = self.fontsize * 1.1)
-        ax1.set_ylabel(self.ylabel, color=self.color_list[0], fontsize = self.fontsize * 1.1)
+        ax1.set_xlabel(self.xlabel, fontsize = self.fontsize)
+        ax1.set_ylabel(self.ylabel, color=self.color_list[0], fontsize = self.fontsize)
         
-        ax1.tick_params(labelsize = self.fontsize * 0.8, length = self.fontsize, which = 'major', width = self.linewidth//2)
-        ax1.tick_params(labelsize = self.fontsize * 0.8, length = self.fontsize//2, which ='minor', width = self.linewidth//2) 
+        ax1.tick_params(labelsize = self.fonttick, length = self.fonttick, which = 'major', width = self.linewidth//2)
+        ax1.tick_params(labelsize = self.fonttick*0, length = self.fonttick//2, which ='minor', width = self.linewidth//2) 
 
 
         for i, y in enumerate(self.yval):
@@ -264,10 +270,10 @@ class PlotFigure(Figure):
             
 
             
-        ax2.tick_params(labelsize = self.fontsize * 0.8, length = self.fontsize, which = 'major', width = self.linewidth//2)
-        ax2.tick_params(labelsize = self.fontsize * 0.8, length = self.fontsize//2, which ='minor', width = self.linewidth//2) 
+        ax2.tick_params(labelsize = self.fonttick, length = self.fonttick, which = 'major', width = self.linewidth//2)
+        ax2.tick_params(labelsize = self.fonttick, length = self.fonttick//2, which ='minor', width = self.linewidth//2) 
 
-        ax2.set_ylabel(self.y2label, color=self.color2_list[0], fontsize = self.fontsize * 1.1)
+        ax2.set_ylabel(self.y2label, color=self.color2_list[0], fontsize = self.fontsize)
         
         for i, y in enumerate(self.y2val):
             x = self.x2val[i]
