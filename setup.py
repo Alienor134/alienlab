@@ -15,7 +15,6 @@ install_requires=[
 	'imgviz>= 0.11.0', 
 	'pandas', 
     'colorlog',
-    'logging', 
     'statsmodels', 
     'scipy']
 
