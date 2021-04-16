@@ -26,3 +26,16 @@ def random_color(num, dim = 3, transparency = 128, div = 255):
         return color + [transparency]
     else: 
         return color
+
+
+def pandas_to_arrays(file):
+    df = pd.read_csv(file)
+
+    headers = np.array(df.keys())
+    data = []
+    for head in headers:
+        data.append(np.array(df[head]))
+        
+    return headers, data
+        
+    

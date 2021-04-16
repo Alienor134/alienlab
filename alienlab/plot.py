@@ -35,7 +35,7 @@ class Figure():
         
         #saving parameters
         self.save_folder = 'save_figures'
-        
+        self.save_path = ""
         self.date = True
         self.save_name = 'Figure'
         self.extension = '.tiff'
@@ -45,15 +45,16 @@ class Figure():
         create_folder_if(self.save_folder)
         
         if self.date == True:
-            path = os.path.join(self.save_folder, str(datetime.datetime.now().strftime('%Y-%m-%d_%H_%M_')) + self.save_name)
-        else:
-            path = os.path.join(self.save_folder, self.save_name)
-        try: 
-            f[0].savefig(path + self.extension)
-            f[1].to_csv(path + ".csv")
-        except: 
-            f.savefig(path + self.extension)
+            self.save_name = str(datetime.datetime.now().strftime('%Y-%m-%d_%H_%M_')) + self.save_name
 
+        self.save_path = os.path.join(self.save_folder, self.save_name)
+
+        try: 
+            f[0].savefig(self.save_path + self.extension)
+            f[1].to_csv(self.save_path + ".csv")
+        except: 
+            f.savefig(self.save_path + self.extension)
+        
         return f
     
     def showing(self, f):
