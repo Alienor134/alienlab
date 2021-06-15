@@ -168,3 +168,5 @@ def json_to_segmented(json_path, im_basis):
         cv2.putText(im_basis, "{}".format(shape['label']), (int(shape['points'][0][0]) - 10, int(shape['points'][0][1])),
 		cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1)
     return im_basis, im_origin
+
+

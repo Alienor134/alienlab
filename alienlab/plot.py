@@ -39,11 +39,20 @@ class Figure():
         self.date = True
         self.save_name = 'Figure'
         self.extension = '.tiff'
+        self.mongo = False
+        self.mongo_run = False
 
     
     def saving(self, f):
         create_folder_if(self.save_folder)
         
+        if self.mongo == True:
+            try:
+                self.mongo_run != False
+            except:
+                print("if Mongo is True, you need to provide a _run. Setting mongo to False!")
+                self.mongo = False
+
         if self.date == True:
             self.save_name = str(datetime.datetime.now().strftime('%Y-%m-%d_%H_%M_')) + self.save_name
 
@@ -52,8 +61,19 @@ class Figure():
         try: 
             f[0].savefig(self.save_path + self.extension)
             f[1].to_csv(self.save_path + ".csv")
+            if self.mongo:
+                self.mongo_run.add_artifact(self.save_path + self.extension)
+                self.mongo_run.add_artifact(self.save_path + ".csv")
+
         except: 
             f.savefig(self.save_path + self.extension)
+            if self.mongo:
+                self.mongo_run.add_artifact(self.save_path + self.extension)
+                self.mongo_run.add_artifact(self.save_path + ".csv")
+
+
+
+
         
         return f
     
@@ -82,13 +102,14 @@ class PlotFigure(Figure):
         #plot parameters
       
         self.color = 'steelblue'
-        self.marker = 'o-'
+        self.marker_list = ['.']*100
+        self.linestyle_list = ['-']*100
         self.linewidth = 2
         self.legend = True #show legend for curves
         self.ticks = True   #not show ticks on the axis
         self.axes = False #not output the axes when plotting
-        self.majorFormatterx = "%d"#"%0.2f"
-        self.majorFormattery = "%0.2e"#"%0.2f"
+        self.majorFormatterx = "%0.3e"#"%0.2f"
+        self.majorFormattery = "%0.3e"#"%0.2f"
         self.major_ticks = True     
         self.minor_ticks = False
         #multiplot parameters
@@ -116,6 +137,8 @@ class PlotFigure(Figure):
         self.y2val = []
         self.x2val = []
         self.label2_list = []
+        self.marker2_list = [""]*100
+        self.linestyle2_list = [":"]*100
         self.y2label = 'y2 label (unit)'
         self.y2log = ''
 
@@ -158,15 +181,15 @@ class PlotFigure(Figure):
         if self.minor_ticks:
             axis_update.set_minor_locator(minorLocator)
 
-    def logplot(self, x, y, color, label,  log = '', linestyle = '-'):
+    def logplot(self, x, y, color, marker, linestyle, label,  log = ''):
             if log == 'loglog':
-                plt.loglog(x, y, color = color, linewidth = self.linewidth, label = label, linestyle=linestyle)
+                plt.loglog(x, y, marker = marker, linestyle = linestyle, color = color, linewidth = self.linewidth, label = label)
             elif log == 'semilogy':
-                plt.semilogy(x, y, color = color, linewidth = self.linewidth, label = label, linestyle=linestyle)
+                plt.semilogy(x, y, marker = marker, linestyle = linestyle, color = color, linewidth = self.linewidth, label = label)
             elif log == 'semilogx':
-                plt.semilogx(x, y, color = color, linewidth = self.linewidth, label = label, linestyle=linestyle)
+                plt.semilogx(x, y, marker = marker, linestyle = linestyle, color = color, linewidth = self.linewidth, label = label)
             else: 
-                plt.plot(x, y, color = color, linewidth = self.linewidth, label = label, linestyle=linestyle)
+                plt.plot(x, y, marker = marker, linestyle = linestyle, color = color, linewidth = self.linewidth, label = label)
                 
                 
     def plotting(self, xval, yval):
@@ -205,7 +228,11 @@ class PlotFigure(Figure):
             plt.title(self.title, fontsize = self.fontsize * 1.1)
             plt.xlabel(self.xlabel, fontsize = self.fontsize)
             plt.ylabel(self.ylabel, fontsize = self.fontsize)
-            self.logplot(self.xval[i], self.yval[i], color = self.color_list[i], label = self.label_list[i], log = self.ylog) #overlays new curve on the plot
+            color = self.color_list[i]
+            label = self.label_list[i]
+            marker = self.marker_list[i]
+            linestyle = self.linestyle_list[i]
+            self.logplot(self.xval[i], self.yval[i], marker = marker, linestyle = linestyle, color = color, label = label, log = self.ylog) #overlays new curve on the plot
             dict_for_pd[self.xlabel + ' ' + self.label_list[i]] = self.xval[i]
             dict_for_pd[self.ylabel + ' ' + self.label_list[i]] = self.yval[i]
 
@@ -258,7 +285,10 @@ class PlotFigure(Figure):
             x = self.xval[i]
             color = self.color_list[i]
             label = self.label_list[i]
-            self.logplot(x, y, color, label, self.ylog, linestyle = '-')
+            marker = self.marker_list[i]
+            linestyle = self.linestyle_list[i]
+
+            self.logplot(x, y, color, marker, linestyle, label, self.ylog)
             dict_for_pd[self.xlabel + ' ' + label] = self.xval[i]
             dict_for_pd[self.ylabel + ' ' + label] = self.yval[i]
         #plt.legend(loc = 'best', prop={'size': self.fontsize})
@@ -282,7 +312,9 @@ class PlotFigure(Figure):
             x = self.x2val[i]
             color = self.color2_list[i]
             label = self.label2_list[i]
-            self.logplot(x, y, color, label, log = self.y2log, linestyle = ":")
+            marker = self.marker2_list[i]
+            linestyle = self.linestyle2_list[i]
+            self.logplot(x, y, marker = marker, linestyle = linestyle, color=color, label=label, log = self.y2log)
             dict_for_pd[self.xlabel + ' ' + label] = self.xval[i]
             dict_for_pd[self.y2label + ' ' + label] = self.yval[i]            
         #plt.legend(loc = 'best', prop={'size': self.fontsize})

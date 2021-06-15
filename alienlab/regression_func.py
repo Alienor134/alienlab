@@ -31,13 +31,17 @@ plt.show()
 
 
 
-def get_func(X, Y):
+def get_func(X, Y, k = 3):
         Y = np.array([y for x, y in sorted(zip(X, Y))]) #preliminary sorting of the arrays along wavelength 
                                                             #(in case the graph in not properly ordered)
         X = np.sort(X)
-        func = InterpolatedUnivariateSpline(X, Y) # interpolate given values with step 1 nm
+        func = InterpolatedUnivariateSpline(X, Y, k=k) # interpolate given values with step 1 nm
         return func
 
+def get_affine_func(X, Y):
+    Yreg, a, b, sum = regression_affine(X, Y)
+    return lambda x: a*x + b
+    
 def regression_affine(X, Y, details = True):
         Xreg = add_constant(X) #Add a constant to fit tan affine model
 
