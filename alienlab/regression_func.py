@@ -2,7 +2,7 @@ from statsmodels.regression import linear_model
 from statsmodels.api import add_constant
 from scipy.interpolate import InterpolatedUnivariateSpline
 import numpy as np
-
+import warnings
 """
 Example of use:
 
@@ -39,8 +39,13 @@ def get_func(X, Y, k = 3):
         return func
 
 def get_affine_func(X, Y):
+    warnings.filterwarnings('ignore')
     Yreg, a, b, sum = regression_affine(X, Y)
     return lambda x: a*x + b
+
+def get_polyfit_func(X, Y, order):
+    func = np.poly1d(np.polyfit(X, Y, order))
+    return func
     
 def regression_affine(X, Y, details = True):
         Xreg = add_constant(X) #Add a constant to fit tan affine model
@@ -51,6 +56,8 @@ def regression_affine(X, Y, details = True):
         Yreg = a*X + b #regression curve
 
         return Yreg, a, b, results.summary()
+
+
 
 def exp_decay(parameters,xdata):
     '''
@@ -86,6 +93,11 @@ def high_pass(parameters, xdata):
     
     return H /(1 + (xdata * tau)**2) + a0
 
+
+def platt(parameters, xdata):
+    M = parameters[0]
+    alpha = parameters[1]
+    return M*(1- np.exp(-alpha*xdata/M))
 
 
 def amplitude(parameters, xdata):

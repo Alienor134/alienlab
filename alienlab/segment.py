@@ -19,7 +19,10 @@ import skimage.util
 import skimage.segmentation
 import skimage.feature
 import skimage.transform
+import copy
+import matplotlib.pyplot as plt
 
+from tqdm import tqdm
 
 '''MORPHOLOGICAL OPERATIONS BASED ON SKIMAGE'''
 
@@ -170,3 +173,56 @@ def json_to_segmented(json_path, im_basis):
     return im_basis, im_origin
 
 
+
+def uniform_mask(im, N, plot = False):
+    """Create a mask whith discrete values associated to a grid of image im with size N"""
+    L,H,_ = im.shape
+    mask = copy.copy(im[:,:,0])*0
+    d = 0
+    for i in range(L//N):
+        for j in range(H//N):
+            mask[i*N:(i+1)*N,j*N:(j+1)*N] = d
+            d+=1
+    if plot == True:
+        plt.figure(figsize = (3,3))
+        plt.imshow(mask)
+
+    return mask, (L,H), (L//N, H//N)
+
+
+
+def label_to_data(mask, FO):
+    # Item time trajectories with overlaps
+    # create a dictionnary with one entry for each item:
+    '''
+    { '1.0': {'x_coords': np array, x coordinates in HQ}
+                'y_coords': np array,  y coordinates in HQ
+                'binned_coords': set, couples of (x,y) coordinates in binned video
+                'surface': number of pixels in the item in HQ
+                'pixel_values': array, size: (N, s) where N is number of frames and s surface
+                'mean': array, size N, mean value of the item intensity for each frame
+                'std':  array, size N, std value of the item intensity for each frame
+                'remains' : True, the item is present in this segmentation step
+                }
+    '2.0': {'x_coords'...
+                    }
+        }
+    '''
+    segmented = mask
+    items = np.unique(segmented) #returns the set of values in items, corresponds to the values of the markers of local_maxima
+
+    items_dict = {}
+    for k in tqdm(items):
+        key = str(k)
+        items_dict[key] = {}
+        x_coords, y_coords = np.nonzero(segmented == k)
+        items_dict[key]['x_coords'] = x_coords
+        items_dict[key]['y_coords'] = y_coords
+        pixel_values = FO.frames[:,x_coords, y_coords]
+        items_dict[key]['pixel_values'] = pixel_values
+        items_dict[key]['surface'] = pixel_values.shape[1]
+        items_dict[key]['mean'] = np.mean(pixel_values, axis = 1)
+        items_dict[key]['std'] = np.std(pixel_values, axis = 1)
+        items_dict[key]['remains'] = True
+
+    return items_dict
