@@ -6,15 +6,27 @@ from skimage.transform import resize
 from alienlab.utils import clip
 import numpy as np
 
-def click_to_graph(mask, im_plot, video_list, time_list, get_fit):
+def click_to_graph(mask, im_plot, video_list_init, time_list, get_fit, clipit = True, figsize=(0,0)):
     # Create a random image
-    fig, axs = plt.subplots(1, len(video_list)+1, figsize=(5*len(video_list), 4))
+    L = len(video_list_init)+1
+    col  = 4
+    if figsize == (0,0):
+        fig, axs = plt.subplots(L//col, col , figsize=(15, 5*(L//3)))
+    else:
+        fig, axs = plt.subplots(L//col, col, figsize=figsize)
     IR = resize(im_plot, mask.shape)
-
-    axs[0].imshow(clip(IR))
-    axs[0].axis('off')
+    if clipit == True:
+        axs[0][0].imshow(clip(IR))
+    else: 
+        axs[0][0].imshow(IR)
+    axs[0][0].axis('off')
 
     flat_mask = mask.flatten()
+
+    video_list = []
+    for video in video_list_init:
+        if video.shape[0]!=0:
+            video_list.append(video)
 
     for i, video in enumerate(video_list): 
         video_list[i] = video.reshape(video.shape[0], -1)
@@ -37,16 +49,16 @@ def click_to_graph(mask, im_plot, video_list, time_list, get_fit):
 
         ind = mask[iy.astype(int), ix.astype(int)]
         pos = flat_mask == ind
-
-        for i, video in enumerate(video_list):
-            y = np.mean(video[:, pos], axis = 1)    
-            x = time_list[i]
-            params, ypred = get_fit(y, x, give_y = True)
-            axs[i+1].plot(x, ypred, label = params[1])
-            axs[i+1].plot(x, y, '.')
-            axs[i+1].legend()
- 
-        
+        if ind != 0:
+            for i, video in enumerate(video_list):
+                y = np.mean(video[:, pos], axis = 1)    
+                x = time_list[i]
+                params, ypred = get_fit(y, x, give_y = True)
+                axs[(i+1)//col][(i+1)%col].plot(x, ypred, label = params[1])
+                axs[(i+1)//col][(i+1)%col].plot(x, y, '.')
+                axs[(i+1)//col][(i+1)%col].legend()
+    
+            
         plt.tight_layout()
     # Create an hard reference to the callback not to be cleared by the garbage collector
     ka = fig.canvas.mpl_connect('button_press_event', onclick)

@@ -58,19 +58,19 @@ class Figure():
 
         self.save_path = os.path.join(self.save_folder, self.save_name)
 
-        try: 
+        if type(f)==type(plt.figure()):
+
+            f.savefig(self.save_path + self.extension)
+            if self.mongo:
+                self.mongo_run.add_artifact(self.save_path + self.extension)
+
+
+        else: 
             f[0].savefig(self.save_path + self.extension)
             f[1].to_csv(self.save_path + ".csv")
             if self.mongo:
                 self.mongo_run.add_artifact(self.save_path + self.extension)
                 self.mongo_run.add_artifact(self.save_path + ".csv")
-
-        except: 
-            f.savefig(self.save_path + self.extension)
-            if self.mongo:
-                self.mongo_run.add_artifact(self.save_path + self.extension)
-                self.mongo_run.add_artifact(self.save_path + ".csv")
-
 
 
 
