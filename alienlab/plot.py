@@ -23,6 +23,26 @@ matplotlib.rcParams['font.sans-serif'] = "Arial"
 matplotlib.rcParams['font.family'] = "sans-serif"
 
 
+from collections import OrderedDict
+
+linestyles = OrderedDict(
+    [('solid',               (0, ())),
+     #('loosely dotted',      (0, (1, 10))),
+     ('dotted',              (0, (1, 2))),
+     ('densely dotted',      (0, (1, 1))),
+
+     #('loosely dashed',      (0, (5, 10))),
+     ('dashed',              (0, (5, 2))),
+     ('densely dashed',      (0, (5, 1))),
+
+     #('loosely dashdotted',  (0, (3, 10, 1, 10))),
+     ('dashdotted',          (0, (3, 2, 1, 2))),
+     ('densely dashdotted',  (0, (3, 1, 1, 1))),
+
+     #('loosely dashdotdotted', (0, (3, 10, 1, 10, 1, 10))),
+     ('dashdotdotted',         (0, (3, 2, 1, 2, 1, 2))),
+     ('densely dashdotdotted', (0, (3, 1, 1, 1, 1, 1)))])
+keys = list(linestyles.keys())
 
 #Parent class
 
@@ -41,6 +61,7 @@ class Figure():
         self.extension = '.tiff'
         self.mongo = False
         self.mongo_run = False
+        
 
     
     def saving(self, f):
@@ -117,7 +138,7 @@ class PlotFigure(Figure):
         self.label_list = self.label_item * 100
         self.color_list = [(1,0,0),(0,0,0),(0,0,1)] + [random_color(255) for i in range(100)]
         self.color2_list = [(0.5,0,0),(0.5,0.5,0.5),(0,0,0.5)] + [random_color(255) for i in range(100)]
-
+        self.linestyles = [linestyles[k] for k in keys]
 
         #[self.color] + ['indianred', 'seagreen', 'mediumslateblue', 'maroon', 'palevioletred'
                           #'orange', 'lightseagreen', 'dimgrey', 'slateblue']
@@ -192,6 +213,25 @@ class PlotFigure(Figure):
                 plt.plot(x, y, marker = marker, linestyle = linestyle, color = color, linewidth = self.linewidth, label = label)
                 
                 
+    def set_figure(self, formatx="none" , formaty = "none"):
+        if formatx == "none":
+            formatx =self.majorFormatterx
+        if formaty == "none":
+            formaty =self.majorFormattery
+        fig = plt.figure(figsize = self.figsize)
+        ax1 = plt.gca()
+        ax1.set_xlabel("MPPC voltage (V)", fontsize = self.fontsize)
+        ax1.set_ylabel("intensity (µeins/m²/s)",fontsize = self.fontsize)
+        ax1.tick_params(axis='both', top=False, bottom=True, left=True, right=False, labelleft=True, labelright = False,  labelbottom=True)
+        ax1.tick_params(labelsize = self.fonttick, length = self.fonttick, which = 'major', width = self.linewidth//2, direction = 'in')
+        ax1.tick_params(labelsize = self.fonttick*0, length = self.fonttick//2, which ='minor', width = self.linewidth//2, direction = 'in') 
+        formatx = FormatStrFormatter(formatx)
+        formaty = FormatStrFormatter(formaty)
+
+        ax1.xaxis.set_major_formatter(formatx)
+        ax1.yaxis.set_major_formatter(formaty)
+        return fig
+    
     def plotting(self, xval, yval):
         self.xval = xval
         self.yval = yval

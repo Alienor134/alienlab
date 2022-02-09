@@ -38,14 +38,18 @@ def get_func(X, Y, k = 3):
         func = InterpolatedUnivariateSpline(X, Y, k=k) # interpolate given values with step 1 nm
         return func
 
+
+
+def get_polyfit_func(X, Y, order):
+    func = np.poly1d(np.polyfit(X, Y, order))
+    return func
+
+
 def get_affine_func(X, Y):
     warnings.filterwarnings('ignore')
     Yreg, a, b, sum = regression_affine(X, Y)
     return lambda x: a*x + b
 
-def get_polyfit_func(X, Y, order):
-    func = np.poly1d(np.polyfit(X, Y, order))
-    return func
     
 def regression_affine(X, Y, details = True):
         Xreg = add_constant(X) #Add a constant to fit tan affine model
@@ -55,7 +59,21 @@ def regression_affine(X, Y, details = True):
         [b, a] = results.params #parameters of the affine curve
         Yreg = a*X + b #regression curve
 
-        return Yreg, a, b, results.summary()
+        return Yreg, a, b, results
+
+def get_linear_func(X, Y):
+    warnings.filterwarnings('ignore')
+    Yreg, a, sum = regression_linear(X, Y)
+    return lambda x: a*x
+
+def regression_linear(X, Y, details = True):
+
+        model = linear_model.OLS(Y, X) #Linear regression
+        results = model.fit()
+        a = results.params #parameters of the affine curve
+        Yreg = a*X #regression curve
+
+        return Yreg, a, results
 
 
 

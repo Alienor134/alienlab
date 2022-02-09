@@ -213,12 +213,13 @@ def label_to_data(mask, FO):
 
     items_dict = {}
     for k in tqdm(items):
+        x_coords, y_coords = np.nonzero(segmented == k)
+        pixel_values = FO.frames[:,x_coords, y_coords]
+
         key = str(k)
         items_dict[key] = {}
-        x_coords, y_coords = np.nonzero(segmented == k)
         items_dict[key]['x_coords'] = x_coords
         items_dict[key]['y_coords'] = y_coords
-        pixel_values = FO.frames[:,x_coords, y_coords]
         items_dict[key]['pixel_values'] = pixel_values
         items_dict[key]['surface'] = pixel_values.shape[1]
         items_dict[key]['mean'] = np.mean(pixel_values, axis = 1)

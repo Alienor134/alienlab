@@ -5,15 +5,17 @@ import ipywidgets as wdg  # Using the ipython notebook widgets
 from skimage.transform import resize
 from alienlab.utils import clip
 import numpy as np
+from IPython.display import display
 
-def click_to_graph(mask, im_plot, video_list_init, time_list, get_fit, clipit = True, figsize=(0,0)):
+
+def click_to_graph(mask, im_plot, video_list_init, time_list, get_fit, clipit = True, col = 3, figsize=(0,0)):
     # Create a random image
     L = len(video_list_init)+1
-    col  = 4
+    
     if figsize == (0,0):
-        fig, axs = plt.subplots(L//col, col , figsize=(15, 5*(L//3)))
+        fig, axs = plt.subplots(col, L//col + 1 , figsize=(5*(L//col), 10))
     else:
-        fig, axs = plt.subplots(L//col, col, figsize=figsize)
+        fig, axs = plt.subplots(col, L//col + 1, figsize=figsize)
     IR = resize(im_plot, mask.shape)
     if clipit == True:
         axs[0][0].imshow(clip(IR))
@@ -54,9 +56,9 @@ def click_to_graph(mask, im_plot, video_list_init, time_list, get_fit, clipit = 
                 y = np.mean(video[:, pos], axis = 1)    
                 x = time_list[i]
                 params, ypred = get_fit(y, x, give_y = True)
-                axs[(i+1)//col][(i+1)%col].plot(x, ypred, label = params[1])
-                axs[(i+1)//col][(i+1)%col].plot(x, y, '.')
-                axs[(i+1)//col][(i+1)%col].legend()
+                axs[(i+1)%col][(i+1)//col].plot(x, ypred, label = params[1])
+                axs[(i+1)%col][(i+1)//col].plot(x, y, '-')
+                axs[(i+1)%col][(i+1)//col].legend()
     
             
         plt.tight_layout()
