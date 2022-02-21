@@ -4,6 +4,16 @@ import numpy as np
 import random
 import pandas as pd
 import copy
+from tkinter.filedialog import askdirectory, askopenfilename
+
+
+def set_filename():
+    file = askopenfilename()
+    return file
+
+def set_directory():
+    direc = askdirectory()
+    return direc
 
 def create_folder_if(directory):
     if not os.path.exists(directory):
