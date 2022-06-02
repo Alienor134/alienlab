@@ -56,4 +56,22 @@ def pandas_to_arrays(file):
         
     return headers, data
         
+def tiff_to_video():
+    from tkinter.filedialog import askopenfilename
+    import numpy as np
+    import cv2
+    import imageio
+    filename = askopenfilename()
+    vid_name = os.path.split(filename)[0] + "/video_converted.mp4"
+    print(vid_name)
     
+    out = cv2.VideoWriter(vid_name, cv2.VideoWriter_fourcc(*'mp4v'), 6, (968, 608), False)
+
+        
+    reader = imageio.get_reader(filename)
+    for im in reader:
+            video_frame = np.array(im)
+            video_frame = video_frame*255.0/(np.max(video_frame))
+            video_frame =video_frame.astype(dtype='uint8')
+            out.write(video_frame)
+    out.release()

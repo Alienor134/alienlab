@@ -220,8 +220,8 @@ class PlotFigure(Figure):
             formaty =self.majorFormattery
         fig = plt.figure(figsize = self.figsize)
         ax1 = plt.gca()
-        ax1.set_xlabel("MPPC voltage (V)", fontsize = self.fontsize)
-        ax1.set_ylabel("intensity (µeins/m²/s)",fontsize = self.fontsize)
+        ax1.set_xlabel(self.xlabel, fontsize = self.fontsize)
+        ax1.set_ylabel(self.ylabel,fontsize = self.fontsize)
         ax1.tick_params(axis='both', top=False, bottom=True, left=True, right=False, labelleft=True, labelright = False,  labelbottom=True)
         ax1.tick_params(labelsize = self.fonttick, length = self.fonttick, which = 'major', width = self.linewidth//2, direction = 'in')
         ax1.tick_params(labelsize = self.fonttick*0, length = self.fonttick//2, which ='minor', width = self.linewidth//2, direction = 'in') 
