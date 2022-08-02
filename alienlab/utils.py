@@ -5,7 +5,36 @@ import random
 import pandas as pd
 import copy
 from tkinter.filedialog import askdirectory, askopenfilename
+import matplotlib.pyplot as plt
+from collections import OrderedDict
 
+marker = [".",",","o","v","^","<",">","1","2","3","4","8","s","p","P","*","h","H","+","x","X","D","d","|","_",0,1,2,3,4,5,6,7,8,9,10,11
+]
+
+hatch = [ "////" , "\\\\" , "||||" , "----" , "...." , "xxxx", "oooo", "O"]
+
+linestyles = OrderedDict(
+    [('solid',               (0, ())),
+     ('loosely dotted',      (0, (1, 10))),
+     ('dotted',              (0, (1, 5))),
+     ('densely dotted',      (0, (1, 1))),
+
+     ('loosely dashed',      (0, (5, 10))),
+     ('dashed',              (0, (5, 5))),
+     ('densely dashed',      (0, (5, 1))),
+
+     ('loosely dashdotted',  (0, (3, 10, 1, 10))),
+     ('dashdotted',          (0, (3, 5, 1, 5))),
+     ('densely dashdotted',  (0, (3, 1, 1, 1))),
+
+     ('loosely dashdotdotted', (0, (3, 10, 1, 10, 1, 10))),
+     ('dashdotdotted',         (0, (3, 5, 1, 5, 1, 5))),
+     ('densely dashdotdotted', (0, (3, 1, 1, 1, 1, 1)))])
+
+
+linestyle =  ['', ' ', 'None', '--', '-.', '-', ':']
+
+color = plt.get_cmap('jet')(np.linspace(0, 1, 20))
 
 def set_filename():
     file = askopenfilename()
