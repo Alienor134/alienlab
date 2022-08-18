@@ -75,13 +75,15 @@ def clip(input_image, high = 90, low = 10):
     im[im>np.percentile(im, high)]=np.percentile(im, high)
     return im
 
-def pandas_to_arrays(file):
-    df = pd.read_csv(file)
+def pandas_to_arrays(file, skiprows=None, skipfooter=0):
+    df = pd.read_csv(file, skiprows=skiprows, skipfooter=skipfooter)
 
     headers = np.array(df.keys())
     data = []
     for head in headers:
-        data.append(np.array(df[head]))
+        y = np.array(df[head])
+        y = y[y==y]
+        data.append(y)
         
     return headers, data
         
