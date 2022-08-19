@@ -8,7 +8,7 @@ from tkinter.filedialog import askdirectory, askopenfilename
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 
-marker = [".",",","o","v","^","<",">","1","2","3","4","8","s","p","P","*","h","H","+","x","X","D","d","|","_",0,1,2,3,4,5,6,7,8,9,10,11
+marker = [".", "s","o","v","^","<",">","1","2","3","4","8","p","P","*","h","H","+","x","X","D","d","|","_",0,1,2,3,4,5,6,7,8,9,10,11
 ]
 
 hatch = [ "////" , "\\\\" , "||||" , "----" , "...." , "xxxx", "oooo", "O"]
@@ -32,7 +32,7 @@ linestyles = OrderedDict(
      ('densely dashdotdotted', (0, (3, 1, 1, 1, 1, 1)))])
 
 
-linestyle =  ['', ' ', 'None', '--', '-.', '-', ':']
+linestyle =  ['--', '-.', '-', ':', '', ' ']
 
 color = plt.get_cmap('jet')(np.linspace(0, 1, 20))
 

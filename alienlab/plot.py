@@ -64,7 +64,7 @@ class Figure():
         self.mongo = False
         self.mongo_run = False
         self.label_intensity = r"$I$ ($\mu E.m^{-2}.s^{-1}$)"
-
+        self.label_tau = r"1/$\tau$ ($s^{-1}$)"
     
     def saving(self, f):
         create_folder_if(self.save_folder)
