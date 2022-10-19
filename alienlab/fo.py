@@ -36,7 +36,7 @@ class FramesOperator():
         return self.frames
 
     def speed(self, task, kwargs):
-        return np.asarray(Parallel(n_jobs=-1)(delayed(task)(skimage.util.img_as_ubyte(self.frames[i]), **kwargs) 
+        return np.asarray(Parallel(n_jobs=-1, max_nbytes=None)(delayed(task)(skimage.util.img_as_ubyte(self.frames[i]), **kwargs) 
                                               for i in self.selected_inds))    
     
     def apply(self, func, **kwargs):
