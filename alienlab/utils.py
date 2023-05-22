@@ -7,6 +7,8 @@ import copy
 from tkinter.filedialog import askdirectory, askopenfilename
 import matplotlib.pyplot as plt
 from collections import OrderedDict
+from scipy import stats
+
 
 marker = [".", "s","o","v","^","<",">","1","2","3","4","8","p","P","*","h","H","+","x","X","D","d","|","_",0,1,2,3,4,5,6,7,8,9,10,11
 ]
@@ -106,3 +108,30 @@ def tiff_to_video():
             video_frame =video_frame.astype(dtype='uint8')
             out.write(video_frame)
     out.release()
+    
+    
+def generate_col(): #colormap
+    colors = np.concatenate([plt.cm.nipy_spectral(np.linspace(0,1,255)), 
+                       plt.cm.jet(np.linspace(0,1,255)), 
+                       plt.cm.hot(np.linspace(0,1,255)), 
+                       plt.cm.turbo(np.linspace(0,1,255)), 
+                       plt.cm.viridis(np.linspace(0,1,255)), 
+                       plt.cm.gnuplot(np.linspace(0,1,255)), 
+                       plt.cm.gnuplot2(np.linspace(0,1,255)), 
+                       plt.cm.gist_rainbow(np.linspace(0,1,255)), 
+                       plt.cm.gist_earth(np.linspace(0,1,255))])
+    random.seed(4)
+    random.shuffle(colors)
+    return (colors*255).astype(int)
+
+
+def normal_hypothesis(x, alpha = 0.05):
+    k2, p = stats.normaltest(x)
+    print("hypothesis: the data come from a normal distribution")
+    print("p = {:g}".format(p))
+    if p < alpha:  # 
+            print("hypothesis valid")
+            return True
+    else:
+        print("hypothesis rejected")
+        return False

@@ -63,9 +63,10 @@ class Figure():
         self.extension = '.tiff'
         self.mongo = False
         self.mongo_run = False
-        self.label_intensity = r"$I$ ($\mu E.m^{-2}.s^{-1}$)"
-        self.label_tau = r"1/$\tau$ ($s^{-1}$)"
-    
+        self.label_intensity = r"$I$ ($\mathrm{\mu E \cdot m^{-2} \cdot s^{-1}}$)"
+        self.label_tau = r"1/$\tau$ ($\mathrm{s^{-1}}$)"
+        self.bbox_inches='tight'
+        
     def saving(self, f):
         create_folder_if(self.save_folder)
         
@@ -83,13 +84,13 @@ class Figure():
 
         if type(f)==type(plt.figure()):
 
-            f.savefig(self.save_path + self.extension)
+            f.savefig(self.save_path + self.extension, bbox_inches=self.bbox_inches)
             if self.mongo:
                 self.mongo_run.add_artifact(self.save_path + self.extension)
 
 
         else: 
-            f[0].savefig(self.save_path + self.extension)
+            f[0].savefig(self.save_path + self.extension, bbox_inches=self.bbox_inches)
             f[1].to_csv(self.save_path + ".csv")
             if self.mongo:
                 self.mongo_run.add_artifact(self.save_path + self.extension)
@@ -215,16 +216,19 @@ class PlotFigure(Figure):
                 plt.plot(x, y, marker = marker, linestyle = linestyle, color = color, linewidth = self.linewidth, label = label)
                 
                 
-    def set_figure(self, formatx="none" , formaty = "none"):
+    def set_figure(self, formatx="none" , formaty = "none", figsize = (0,0), label_right=False):
         if formatx == "none":
             formatx =self.majorFormatterx
         if formaty == "none":
             formaty =self.majorFormattery
             
         inch=2.54
-        self.figsize = (13/inch,12/inch)
-        self.fontsize = 18
-        self.fonttick = 12
+        if figsize==(0,0):
+            self.figsize = (13/inch,12/inch)
+        else: 
+            self.figsize = (figsize[0]/inch, figsize[1]/inch)
+        #self.fontsize = 18
+        #self.fonttick = 12
         rc = {"font.family" : "Arial", 
             "mathtext.fontset" : "dejavusans"}
         plt.rcParams.update(rc)
@@ -243,13 +247,49 @@ class PlotFigure(Figure):
         ax1.yaxis.set_major_formatter(formaty)
         left = 2.5/inch/(self.figsize[0])
         top = 1 - 0.5/inch/(self.figsize[1])
-        right = 1 - 0.5/inch/(self.figsize[0])
+        if label_right==False:
+            right = 1 - 0.5/inch/(self.figsize[0])
+        else:
+            right = 1 - 2.5/inch/(self.figsize[0])
+
         bottom = 1.5/inch/(self.figsize[1])
         fig.subplots_adjust(left=left, bottom=bottom, right=right, top=top, wspace=None, hspace=None)
         return fig
     
     
-    def image_scale(self, im, crop=False):
+    def set_figure_flex(self, formatx="none" , formaty = "none", figsize = (0,0)):
+        if formatx == "none":
+            formatx =self.majorFormatterx
+        if formaty == "none":
+            formaty =self.majorFormattery
+            
+        inch=2.54
+        if figsize==(0,0):
+            self.figsize = (13/inch,12/inch)
+        else: 
+            self.figsize = (figsize[0]/inch, figsize[1]/inch)
+        #self.fontsize = 18
+        #self.fonttick = 12
+        rc = {"font.family" : "Arial", 
+            "mathtext.fontset" : "dejavusans"}
+        plt.rcParams.update(rc)
+            
+        fig = plt.figure(figsize = self.figsize)
+        ax1 = plt.gca()
+        ax1.set_xlabel(self.xlabel, fontsize = self.fontsize)
+        ax1.set_ylabel(self.ylabel,fontsize = self.fontsize)
+        ax1.tick_params(axis='both', top=False, bottom=True, left=True, right=False, labelleft=True, labelright = False,  labelbottom=True)
+        ax1.tick_params(labelsize = self.fonttick, length = self.fonttick//2, which = 'major', width = self.linewidth//2, direction = 'in')
+        ax1.tick_params(labelsize = self.fonttick*0, length = self.fonttick//4, which ='minor', width = self.linewidth//2, direction = 'in') 
+        formatx = FormatStrFormatter(formatx)
+        formaty = FormatStrFormatter(formaty)
+
+        ax1.xaxis.set_major_formatter(formatx)
+        ax1.yaxis.set_major_formatter(formaty)
+        
+        return fig
+    
+    def image_scale(self, im, label, crop=False):
         if crop==True:
             Q1 = np.quantile(im, 0.01)
             Q3 = np.quantile(im, 0.95)
@@ -262,7 +302,8 @@ class PlotFigure(Figure):
         divider = make_axes_locatable(plt.gca())
         axdef = divider.append_axes("bottom", "5%", pad="3%")
         cbar = plt.colorbar(image, cax=axdef, orientation = "horizontal")
-        cbar.ax.tick_params(labelsize=self.fontsize, size = self.fontsize/2, width = 2)
+        cbar.set_label(label, fontsize = self.fontsize)
+        cbar.ax.tick_params(labelsize=self.fonttick, size = self.fonttick/2, width = 2)
         return fig
 
     def plotting(self, xval, yval):
